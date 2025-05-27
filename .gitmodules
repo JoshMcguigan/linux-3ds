@@ -1,0 +1,16 @@
+[submodule "buildroot"]
+	path = buildroot
+	url = ../../JoshMcguigan/linux-3ds-buildroot.git
+	branch = develop
+[submodule "firm_linux_loader"]
+	path = firm_linux_loader
+	url = ../../JoshMcguigan/linux-3ds-firm_linux_loader.git
+	branch = develop
+[submodule "arm9linuxfw"]
+	path = arm9linuxfw
+	url = ../../JoshMcguigan/linux-3ds-arm9linuxfw.git
+	branch = develop
+[submodule "linux"]
+	path = linux
+	url = ../../JoshMcguigan/linux-3ds-linux.git
+	branch = develop
