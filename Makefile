@@ -13,9 +13,9 @@ BR_ARTIFACT_ROOTFS := buildroot/output/images/rootfs.cpio.gz
 
 ARM9FW_ARTIFACT_BIN := arm9linuxfw/arm9linuxfw.bin
 
-KERNEL_ARTIFACT_IMAGE := linux/arch/arm/boot/zImage
-KERNEL_ARTIFACT_DTB_CTR := linux/arch/arm/boot/dts/nintendo3ds_ctr.dtb
-KERNEL_ARTIFACT_DTB_KTR := linux/arch/arm/boot/dts/nintendo3ds_ktr.dtb
+KERNEL_ARTIFACT_IMAGE := output/linux-build/arch/arm/boot/zImage
+KERNEL_ARTIFACT_DTB_CTR := output/linux-build/arch/arm/boot/dts/nintendo3ds_ctr.dtb
+KERNEL_ARTIFACT_DTB_KTR := output/linux-build/arch/arm/boot/dts/nintendo3ds_ktr.dtb
 
 .PHONY: all clean
 
@@ -63,7 +63,7 @@ $(KERNEL_DTB_KTR): $(KERNEL_ARTIFACT_DTB_KTR)
 $(KERNEL_ARTIFACT_IMAGE): SHELL=/bin/bash
 $(KERNEL_ARTIFACT_IMAGE) $(KERNEL_ARTIFACT_DTB_CTR) $(KERNEL_ARTIFACT_DTB_KTR): $(BR_ARTIFACT_ENV_SETUP)
 	. $(BR_ARTIFACT_ENV_SETUP); \
-	ARCH=arm CROSS_COMPILE=arm-linux- $(MAKE) -C linux nintendo3ds_defconfig all
+	ARCH=arm CROSS_COMPILE=arm-linux- $(MAKE) -C linux O=../output/linux-build nintendo3ds_defconfig all
 
 clean:
 	$(MAKE) -C firm_linux_loader clean
