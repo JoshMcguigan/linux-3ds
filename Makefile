@@ -6,6 +6,10 @@ KERNEL_IMAGE := $(TARGET_DIR)/zImage
 KERNEL_DTB_CTR := $(TARGET_DIR)/nintendo3ds_ctr.dtb
 KERNEL_DTB_KTR := $(TARGET_DIR)/nintendo3ds_ktr.dtb
 
+# SD card image configuration
+SDCARD_IMG := $(TARGET_DIR)/sdcard.img
+SDCARD_SIZE_MB := 512
+
 LOADER_ARTIFACT_FIRM := firm_linux_loader/firm_linux_loader.firm
 
 BR_ARTIFACT_ENV_SETUP := buildroot/output/host/environment-setup
@@ -17,9 +21,9 @@ KERNEL_ARTIFACT_IMAGE := output/linux-build/arch/arm/boot/zImage
 KERNEL_ARTIFACT_DTB_CTR := output/linux-build/arch/arm/boot/dts/nintendo3ds_ctr.dtb
 KERNEL_ARTIFACT_DTB_KTR := output/linux-build/arch/arm/boot/dts/nintendo3ds_ktr.dtb
 
-.PHONY: all clean
+.PHONY: all clean sdcard
 
-all: $(LOADER) $(INITRAMFS) $(ARM9FW) $(KERNEL_IMAGE) $(KERNEL_DTB_CTR) $(KERNEL_DTB_KTR)
+all: $(LOADER) $(INITRAMFS) $(ARM9FW) $(KERNEL_IMAGE) $(KERNEL_DTB_CTR) $(KERNEL_DTB_KTR) $(SDCARD_IMG)
 
 $(TARGET_DIR):
 	mkdir -p $@
@@ -64,6 +68,21 @@ $(KERNEL_ARTIFACT_IMAGE): SHELL=/bin/bash
 $(KERNEL_ARTIFACT_IMAGE) $(KERNEL_ARTIFACT_DTB_CTR) $(KERNEL_ARTIFACT_DTB_KTR): $(BR_ARTIFACT_ENV_SETUP)
 	. $(BR_ARTIFACT_ENV_SETUP); \
 	ARCH=arm CROSS_COMPILE=arm-linux- $(MAKE) -C linux O=../output/linux-build nintendo3ds_defconfig all
+
+$(SDCARD_IMG): $(LOADER) $(INITRAMFS) $(ARM9FW) $(KERNEL_IMAGE) $(KERNEL_DTB_CTR) $(KERNEL_DTB_KTR)
+	dd if=/dev/zero of=$(SDCARD_IMG) bs=1M count=$(SDCARD_SIZE_MB) status=progress
+	mformat -F -i $(SDCARD_IMG) ::
+	mmd -i $(SDCARD_IMG) ::/luma
+	mmd -i $(SDCARD_IMG) ::/luma/payloads
+	mmd -i $(SDCARD_IMG) ::/linux
+	mcopy -i $(SDCARD_IMG) $(LOADER) ::/luma/payloads/
+	mcopy -i $(SDCARD_IMG) $(KERNEL_IMAGE) ::/linux/
+	mcopy -i $(SDCARD_IMG) $(INITRAMFS) ::/linux/
+	mcopy -i $(SDCARD_IMG) $(ARM9FW) ::/linux/
+	mcopy -i $(SDCARD_IMG) $(KERNEL_DTB_CTR) ::/linux/
+	mcopy -i $(SDCARD_IMG) $(KERNEL_DTB_KTR) ::/linux/
+
+sdcard: $(SDCARD_IMG)
 
 clean:
 	$(MAKE) -C firm_linux_loader clean

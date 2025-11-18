@@ -18,4 +18,11 @@ See `.devcontainer/Dockerfile` for the list of dependencies.
 
 `output/firm_linux_loader.firm` should be copied to your SD card in the `luma/payloads` directory.
 
-All the other files in the `output` directory should be copied to your SD card in a `linux` directory.
+The following files should be copied to your SD card in a `linux` directory:
+* `output/arm9linuxfw.bin`
+* `output/initramfs.cpio.gz`
+* `output/nintendo3ds_ctr.dtb`
+* `output/nintendo3ds_ktr.dtb`
+* `output/zImage`
+
+Alternatively you can use write `sdcard.img` to the SD card.
